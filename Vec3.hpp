@@ -115,15 +115,14 @@ public:
 	}
 
 	static inline bool refract(Vec3<T> & v, Vec3<T> & n, float ni_over_nt, Vec3<T> & refracted){
-		Vec3<T> uv = v; //uv.normalize();//o cara do livro manda normalizar. Eu concordo com ele, mas sem normalizar o resultado é mais aceitável
+		Vec3<T> uv = v; uv.normalize();
+		Vec3<T> un = n; un.normalize();
 	
-		float dt = Vec3<T>::dot(uv, n);
+		float dt = Vec3<T>::dot(uv, un);
 		float discriminant = 1.0 - ni_over_nt*ni_over_nt*(1-dt*dt);
 
 		if (discriminant > 0){
-			refracted = ni_over_nt*(v - dt*n) - sqrt(discriminant)*n;
-			
-			//refracted = (ni_over_nt*dt - sqrt(discriminant))*(n-(ni_over_nt*uv)); // versão que eu criei baseado no slide que li
+			refracted = ni_over_nt*(uv - dt*un) - sqrt(discriminant)*un;
 			return true;
 		}
 		else return false;

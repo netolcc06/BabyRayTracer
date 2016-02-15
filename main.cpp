@@ -13,11 +13,12 @@
 
 int main(int argc, char ** argv){
 
-	int width = 640, height = 320;
+	int width = 200, height = 100;
 	Image<float> im(width, height);
 
 	//Vec3<float>a(50.0, 0, 0); a.normalize();
 	//cout << "a =" << a.x() << " " << a.y() << " " << a.z() << endl;
+	//myteste
 
 	srand(1000);
 	im.saveImage("teste.ppm");
