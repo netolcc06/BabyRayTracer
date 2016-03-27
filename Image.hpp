@@ -8,6 +8,9 @@
 #include <cstring>
 #include <math.h>
 
+#include "Box.hpp"
+#include "Triangle.hpp"
+#include "Mesh.hpp"
 #include "Sphere.hpp"
 #include "Hitablelist.hpp"
 #include "Camera.hpp"
@@ -42,8 +45,8 @@ Vec3<float> color(Ray<float> & r, Hitable * world, int depth){
 		Ray<float> scattered;
 		Vec3<float> attenutation;
 
-		if (depth<50 && rec.mat_ptr->scatter(r, rec, attenutation, scattered)){
-			return attenutation*color(scattered, world, depth+1);
+		if (depth<3 && rec.mat_ptr->scatter(r, rec, attenutation, scattered)){
+			return -1 * (Vec3<float>::dot(rec.normal, r.direction()) / (rec.normal.length()*r.direction().length()))*attenutation*color(scattered, world, depth + 1);
 		}
 		else{
 			return Vec3<float>(0.0,0.0,0.0);
@@ -119,23 +122,37 @@ class Image
 			file << width_ << " " << height_ << std::endl;
 			file << "255" << std::endl;
 
-			Hitable *list[5];
+			Hitable *list[12];
 			//float R = cos(M_PI / 4);
-			list[0] = new Sphere(Vec3<float>(-1.5,0.0,-1.0), 0.5, new Lambertian(Vec3<float>(0.1,0.2,0.5)));
-			list[1] = new Sphere(Vec3<float>(1, -100.5, -1.0), 100, new Lambertian(Vec3<float>(0.8, 0.8, 0)));
-			list[2] = new Sphere(Vec3<float>(1.5, 0.0, -1.0), 0.5, new Metal(Vec3<float>(0.8, 0.6, 0.2),1.0));
-			list[3] = new Sphere(Vec3<float>(0.0, 0.0, -1.0), 0.5, new Dieletric(1.5));
+			//-list[0] = new Sphere(Vec3<float>(-1.5,0.0,-1.0), 0.5, new Lambertian(Vec3<float>(0.1,0.2,0.5)));
+			//-list[1] = new Sphere(Vec3<float>(1, -100.5, -1.0), 100, new Lambertian(Vec3<float>(0.8, 0.8, 0)));
+			//-list[2] = new Sphere(Vec3<float>(1.5, 0.0, -1.0), 0.5, new Metal(Vec3<float>(0.8, 0.6, 0.2),1.0));
+			//-list[3] = new Sphere(Vec3<float>(0.0, 0.0, -1.0), 0.5, new Dieletric(1.5));
 			//list[4] = new Sphere(Vec3<float>(0.0, 0.0, -1.0), -0.5, new Dieletric(1.5));
-			list[4] = new Sphere(Vec3<float>(-1.0, 0.0, -5.0), 3.5, new Lambertian(Vec3<float>(0.6, 0.4, 0.5)));
-			
+			//-list[4] = new Sphere(Vec3<float>(-1.0, 0.0, -5.0), 3.5, new Lambertian(Vec3<float>(0.6, 0.4, 0.5)));
+			//-list[5] = new Triangle(Vec3<float>(-1.0, 0.0, 0.0), Vec3<float>(1.0, 0.0, 0.0), Vec3<float>(0.0, 1.0, 0.0), new Lambertian(Vec3<float>(1.0,0.0,0.0)));
 			//list[5] = new Sphere(Vec3<float>(-1.0, 0.0, -1.0), 0.5, new Dieletric(10.5));
 
-			//Hitable * world = new Hitable_list(list, 5);
-			Hitable *world = random_scene();
+			Vec3<float> p1(0.0, 0.0, 0.0), p2(0.0, 0.0, -1.0), p3(0.0, 1.0, 0.0), p4(0.0, 1.0, -1.0),
+				p5(1.0, 0.0, 0.0), p6(1.0, 0.0, -1.0), p7(1.0, 1.0, 0.0), p8(1.0, 1.0, -1.0);
+			Material * tri_m = new Lambertian(Vec3<float>(0,1,0));
+			Triangle *t1 = new Triangle(p1, p5, p7, tri_m), *t2 = new Triangle(p1, p7, p3, tri_m), //front
+				*t3 = new Triangle(p1, p4, p2, new Lambertian(Vec3<float>(0, 1, 0))), *t4 = new Triangle(p1, p3, p4, new Lambertian(Vec3<float>(0, 1, 0))),//left
+				*t5 = new Triangle(p5, p6, p8, new Lambertian(Vec3<float>(0, 0, 1))), *t6 = new Triangle(p5, p8, p7, new Lambertian(Vec3<float>(0, 0, 1))), //right
+				*t7 = new Triangle(p3, p7, p8, new Lambertian(Vec3<float>(0, 1, 1))), *t8 = new Triangle(p3, p8, p4, new Lambertian(Vec3<float>(0, 1, 1))), //up
+				*t9 = new Triangle(p1, p5, p6, new Lambertian(Vec3<float>(0, 0, 0))), *t10 = new Triangle(p1, p6, p2, new Lambertian(Vec3<float>(0, 0, 0))), //down
+				*t11 = new Triangle(p6, p4, p2, new Lambertian(Vec3<float>(1, 0, 1))), *t12 = new Triangle(p6, p8, p4, new Lambertian(Vec3<float>(1, 0, 1)));//back
+			list[11] = t1; list[10] = t2; list[9] = t3; list[8] = t4; list[7] = t5; list[6] = t6;
+			list[5] = t7; list[4] = t8; list[3] = t9; list[2] = t10; list[1] = t11; list[0] = t12;
 
-			Vec3<float> lookfrom(0.0, 0.0, 1.0), lookat(0.0, 0.0, -1.0);
+			list[0] = new Mesh("C:\\Users\\netolcc06\\Desktop\\gourd.obj", tri_m);
+
+			Hitable * world = new Hitable_list(list, 1);
+			//Hitable *world = random_scene();
+
+			Vec3<float> lookfrom(-2.2, 0.5, 5.5), lookat(0.0, 0.0, -1.0);
 			float dist_to_focus = (lookfrom - lookat).length();
-			float aperture = 1.0;
+			float aperture = 2.0;
 
 			Camera cam(lookfrom, lookat,Vec3<float>(0,1,0), 60, float(width_/height_));
 			int ns = 100;

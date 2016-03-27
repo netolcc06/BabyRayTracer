@@ -60,7 +60,7 @@ public:
 			linestream.clear();
 		}
 
-		print();
+		//print();
 	}
 
 	void print() {
