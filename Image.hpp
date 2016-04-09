@@ -46,7 +46,8 @@ Vec3<float> color(Ray<float> & r, Hitable * world, int depth){
 		Vec3<float> attenutation;
 
 		if (depth<3 && rec.mat_ptr->scatter(r, rec, attenutation, scattered)){
-			return -1 * (Vec3<float>::dot(rec.normal, r.direction()) / (rec.normal.length()*r.direction().length()))*attenutation*color(scattered, world, depth + 1);
+			//return -1 * ((rec.normal.length()*r.direction().length()))*attenutation*color(scattered, world, depth + 1);
+			return attenutation*color(scattered, world, depth + 1);
 		}
 		else{
 			return Vec3<float>(0.0,0.0,0.0);
@@ -78,14 +79,17 @@ Hitable *random_scene(){
 
 	int i = 1;
 	
-	for (int a = -11; a < 11; a++){
-		for (int b = -11; b < 11; b++){
+	for (int a = -7; a < 7; a++){
+		for (int b = -7; b < 7; b++){
 			float choose_mat = Rand();
 			Vec3<float> center(a+0.9*Rand(), 0, b+0.9*Rand());
 
 			if (choose_mat < 0.8){
 				list[i++] = new Sphere(center, 0.2, new Lambertian(Vec3<float>(Rand()*Rand(), Rand()*Rand(), Rand()*Rand())));
 			}
+			//else if (choose_mat < 0.9){
+			//	list[i++] = new Box(center, center + Vec3<float>(0.2,0.2,0.2), new Dieletric(-1.5));
+			//}
 			else if (choose_mat < 0.95){
 				list[i++] = new Sphere(center, 0.2, new Metal(Vec3<float>(0.5*(1+Rand()), 0.5*(1+Rand()), 0.5*(1+Rand())), 0.5*Rand()));
 			}
@@ -97,7 +101,7 @@ Hitable *random_scene(){
 
 	list[i++] = new Sphere(Vec3<float>(0,1,0), 1.0, new Dieletric(1.5));
 	list[i++] = new Sphere(Vec3<float>(-4, 1, 0), 1.0, new Lambertian(Vec3<float>(0.4,0.2,0.1)));
-	list[i++] = new Sphere(Vec3<float>(0, 1, 0), 1.0, new Metal(Vec3<float>(0.7, 0.6, 0.5), 0.0));
+	list[i++] = new Sphere(Vec3<float>(3, 1, 0), 1.0, new Metal(Vec3<float>(0.7, 0.6, 0.5), 0));
 
 	return new Hitable_list(list, i);
 }
@@ -145,12 +149,12 @@ class Image
 			list[11] = t1; list[10] = t2; list[9] = t3; list[8] = t4; list[7] = t5; list[6] = t6;
 			list[5] = t7; list[4] = t8; list[3] = t9; list[2] = t10; list[1] = t11; list[0] = t12;
 
-			list[0] = new Mesh("C:\\Users\\netolcc06\\Desktop\\gourd.obj", tri_m);
+			//list[0] = new Mesh("C:\\Users\\netolcc06\\Desktop\\gourd.obj", tri_m);
 
-			Hitable * world = new Hitable_list(list, 1);
-			//Hitable *world = random_scene();
+			//Hitable * world = new Hitable_list(list, 1);
+			Hitable *world = random_scene();
 
-			Vec3<float> lookfrom(-2.2, 0.5, 5.5), lookat(0.0, 0.0, -1.0);
+			Vec3<float> lookfrom(4.7, 1.3, 1.2), lookat(0.0, 0.0, -1.0);
 			float dist_to_focus = (lookfrom - lookat).length();
 			float aperture = 2.0;
 

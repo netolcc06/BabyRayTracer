@@ -13,7 +13,7 @@
 
 int main(int argc, char ** argv){
 
-	int width = 300, height = 200;
+	int width = 600, height = 400;
 	Image<float> im(width, height);
 
 	//Vec3<float>a(50.0, 0, 0); a.normalize();

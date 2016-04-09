@@ -116,7 +116,7 @@ public:
 
 	static inline bool refract(Vec3<T> & v, Vec3<T> & n, float ni_over_nt, Vec3<T> & refracted){
 		Vec3<T> uv = v; uv.normalize();
-		Vec3<T> un = n; un.normalize();
+		Vec3<T> un = n; un.normalize(); //std::cout << "z" << std::endl;
 	
 		float dt = Vec3<T>::dot(uv, un);
 		float discriminant = 1.0 - ni_over_nt*ni_over_nt*(1-dt*dt);
