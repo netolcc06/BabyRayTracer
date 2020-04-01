@@ -3,4 +3,4 @@ Basic ray tracer implementation based on Peter Shirley's book ''Ray Tracing in o
 
 Implemented also boxes, planes and triangle meshes.
 
-![alt tag](teste05.ppm)
+![alt tag](teste05.jpg)
